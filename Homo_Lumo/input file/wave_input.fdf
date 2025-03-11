@@ -1,0 +1,121 @@
+#
+SystemLabel              siesta
+
+%include                 optimized.fdf
+# %include                 grimme.fdf
+
+XC.functional            GGA
+XC.authors               PBE
+
+MeshCutoff               500.0 Ry
+OccupationFunction       MP
+OccupationMPOrder        1
+ElectronicTemperature    300 K
+
+%block kgrid_Monkhorst_Pack
+      1      0     0        0.0
+      0      1     0        0.0
+      0      0     1        0.0
+%endblock kgrid_Monkhorst_Pack
+
+SolutionMethod           diagon
+Diag.ParallelOverK       T
+# Diag.Algorithm           ELPA
+# NumberOfEigenStates      1300
+
+DM.UseSaveDM             T
+MD.UseSaveXV             T
+
+MD.Steps                 1500
+MD.TypeOfRun             Broyden 
+MD.MaxForceTol           0.001 eV/Ang
+MD.VariableCell          T
+MD.MaxDispl              0.05 Ang
+
+%block Geometry.Constraints
+stress 4 5 6
+%endblock Geometry.Constraints
+
+MaxSCFIterations         1500
+SCF.DM.Converge          T
+SCF.DM.Tolerance         1.0d-12
+SCF.MustConverge         T
+SCF.Mix                  Hamiltonian
+SCF.Mix.First            F
+SCF.Mixer.Method         Pulay
+SCF.Mixer.Variant        original
+SCF.Mixer.Weight         0.2
+SCF.Mixer.History        15
+
+###################
+# Spin_Orbit_Part #
+###################
+# Spin.OrbitStrength       1.0
+# WriteOrbMom              false
+# SOC.Spin.SR.SO           true
+
+Write.DM                 T
+Write.H                  F
+
+# WriteMullikenPop         1
+WriteEigenvalues         T
+WriteCoorInitial         T
+WriteCoorStep            T
+WriteForces              T
+XML.Write                T
+
+SaveHS                   T
+SaveRho                  F
+SaveDeltaRho             F
+SaveRhoXC                F
+SaveElectrostaticPotential F
+SaveNeutralAtomPotential   F
+SaveTotalPotential         F
+SaveIonicCharge            F
+SaveBaderCharge            F
+SaveTotalCharge            F
+
+##################
+# Band Structure #
+##################
+BandLinesScale ReciprocalLatticeVectors
+%block BandLines
+ 1 0.0000000  0.00000000   0.0000000   \Gamma
+#40 0.0000000  0.00000000   0.5000000   Z
+%endblock BandLines
+WFS.Write.For.Bands T
+# WFS.Band.Min        200
+# WFS.Band.Max        300
+
+################
+# Wavefunction #
+################
+WriteWaveFunctions              T 
+WaveFuncKPointsScale ReciprocalLatticeVectors
+%block WaveFuncKPoints
+0.000  0.000  0.000  from 49 to 50 # Gamma wavefuncs 1 to 10
+# 0.000  0.000  0.250  from 1 to 10
+# 0.000  0.000  0.500  from 1 to 10
+# 0.000  0.000  0.750  from 1 to 10
+# 0.000  0.000  1.000  from 1 to 10
+%endblock WaveFuncKPoints
+
+########
+# PDOS #
+########
+#  %block ProjectedDensityOfStates
+# EF -4.00  4.00  0.01  200  eV
+# %endblock ProjectedDensityOfStates
+#  %block PDOS.kgrid_Monkhorst_Pack
+#        1      0      0        0.0
+#        0      1      0        0.0
+#        0      0     32        0.0
+#  %endblock PDOS.kgrid_Monkhorst_Pack
+
+# Slab.DipoleCorrection vacuum
+# %block Geometry.Charge
+# plane   0
+# delta
+# 0.0 0.0 2.5 Ang  # An intersection point, in the plane
+# 0.0 0.0 1.0      # The normal vector to the plane
+# %endblock Geometry.Charge
