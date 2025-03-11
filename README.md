@@ -1,4 +1,4 @@
-# alkylgroup
+# molecular_junction
 wave_input.fdf 
 
 wave_output.out
